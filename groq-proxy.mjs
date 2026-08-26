@@ -4,9 +4,13 @@ import { Readable } from 'stream';
 
 const app = express();
 app.use(cors());
+app.use((req, res, next) => {
+    console.log(`[PROXY] ${req.method} ${req.url}`);
+    next();
+});
 app.use(express.json({ limit: '50mb' }));
 
-app.post('/v1/chat/completions', async (req, res) => {
+app.post(['/v1/chat/completions', '/chat/completions'], async (req, res) => {
     console.log("Intercepted chat completions request");
     
     const body = req.body;
@@ -63,7 +67,7 @@ app.post('/v1/chat/completions', async (req, res) => {
 });
 
 // Fallback for models list endpoint so TrueForge can list models
-app.get('/v1/models', async (req, res) => {
+app.get(['/v1/models', '/models'], async (req, res) => {
     const authHeader = req.headers.authorization || `Bearer ${process.env.GROQ_API_KEY}`;
     try {
         const response = await fetch('https://api.groq.com/openai/v1/models', {
