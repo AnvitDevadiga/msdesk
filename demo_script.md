@@ -14,14 +14,13 @@
 
 ## 3. Phase 5 & Capability 3: Visually Unmistakable Approval Gate (1:15 - 2:00)
 *Show the approval gate pausing and being approved on camera.*
-**Speaker:** "Next, notice the Approval Gate. TrueForge agents are powerful, but safety is paramount. The agent halts and renders a highly visible Markdown draft of exactly what it intends to post, waiting for my explicit 'Approve' signal."
-**Visuals:** Show the styled `[DRAFT APPROVAL REQUIRED]` block with emojis, the generated markdown table of metrics, and the clear `To/Channel: team-status` designation.
+## 4. Phase 5: UI Polish & Transparency (2:00 - 2:45)
+*Highlight the distinct states and the highly-styled approval gate.*
+**Speaker:** "We focused heavily on the UI for Phase 5. Notice the distinct state updates emitted by the agent as it works: Planning, Running Sandbox Code, and Waiting for Approval. There's no guessing what the agent is doing."
+**Visuals:** Point out the explicit `[STATE: ...]` logs in the chat.
+**Speaker:** "Then, look at this Approval Gate. It is visually unmistakable. The draft stands out clearly, and the Approve/Reject pseudo-buttons make the human-in-the-loop requirement impossible to miss."
 
-## 4. Execution & Log Verification (2:00 - 2:30)
-*Show the completed action and the log.*
-**Action:** Type "Approve" into the chat. 
-**Speaker:** "Once I approve, the agent uses the custom local Slack MCP Server we built to post the message."
-**Visuals:** Show the success message in TrueForge, then briefly switch to the Slack workspace (or the proxy terminal logs) to prove the payload was successfully transmitted.
-
-## 5. Phase 4 Preview (Optional / Later) (2:30 - 3:00)
-**Speaker:** "In the full version, we also use Subagent Delegation to have a 'Reviewer' agent double-check the tone before it even reaches my desk, and a Gmail MCP integration to simultaneously email the client. Thanks for watching!"
+## 5. Execution & Audit Log (2:45 - 3:00)
+*Show the completed action and the post-run audit log.*
+**Action:** Type "APPROVE" into the chat. 
+**Speaker:** "Once I approve, the agent uses the custom local Slack MCP Server we built to post the message. Immediately after, it emits a structured Audit Log Entry right in the chat to confirm the timestamp and outcome of the action. Thanks for watching!"
