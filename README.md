@@ -5,7 +5,6 @@
 
 [![TrueForge Powered](https://img.shields.io/badge/Harness-TrueForge-7C3AED?style=for-the-badge&logo=ai&logoColor=white)](https://trueforge.dev)
 [![Qodo Reviewed](https://img.shields.io/badge/Code%20Review-Qodo%20Verified-00C7B7?style=for-the-badge&logo=github&logoColor=white)](https://github.com/AnvitDevadiga/msdesk/pulls?q=is%3Apr)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 ---
 
