@@ -4,7 +4,7 @@
 
 ## 1. Introduction (0:00 - 0:15)
 **Speaker:** "This is M's Desk, a TrueForge-based operational agent designed to safely automate routine data reporting. Today, I'll ask it to generate our weekly status report."
-**Action:** Type: *"Draft the weekly metrics report for the team-status channel based on this week's CSV data."*
+**Action:** Type: *"Draft the weekly metrics report for the new-channel based on this week's CSV data."*
 
 ## 2. Sandbox Execution & UI Transparency (0:15 - 1:00)
 **Speaker:** "We focused heavily on the UI. Notice the explicit state logs emitting into the chat: Planning, and now Running Sandbox Code. Instead of hallucinating numbers, the agent writes and executes a Python script in TrueForge's sandbox to parse our local CSV metrics."
