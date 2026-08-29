@@ -1,14 +1,14 @@
 # M's Desk - TrueForge Hackathon Submission
 
-M's Desk is a trusted, human-in-the-loop operational reporting agent built on [TrueForge](https://trueforge.com/). It automates routine operational workflows (such as parsing weekly support metrics from local CSV files and posting polished reports to Slack) while strictly enforcing safety approval gates.
+M's Desk is a trusted, human-in-the-loop operational reporting agent built on [TrueForge](https://trueforge.dev/introduction). It automates routine operational workflows (such as parsing weekly support metrics from local CSV files and posting polished reports to Slack) while strictly enforcing safety approval gates.
 
 ---
 
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
-    %% Custom Styling
+graph LR
+    %% Modern Card Styles
     classDef userStyle fill:#1e1e2e,stroke:#cba6f7,stroke-width:2px,color:#cdd6f4;
     classDef agentStyle fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4;
     classDef toolStyle fill:#1e1e2e,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4;
@@ -16,21 +16,17 @@ graph TD
     classDef gateStyle fill:#1e1e2e,stroke:#f38ba8,stroke-width:2px,color:#cdd6f4;
     classDef slackStyle fill:#1e1e2e,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4;
 
-    A["👤 User"]:::userStyle -->|"1. Triggers Weekly Report"| B["🤖 M's Desk Agent (TrueForge)"]:::agentStyle
-    
-    B -->|"2. Queries Tool via SSE"| C["🔌 Slack MCP Server"]:::toolStyle
-    C -->|"3. Reads Local CSV"| D[("📁 data/weekly_metrics.csv")]:::toolStyle
-    D -->|"4. Returns Raw Telemetry"| B
-    
-    B -->|"5. Dispatches Python Execution"| E["🧪 Isolated Code Sandbox"]:::sandboxStyle
-    E -->|"6. Computes Totals & SLA Metrics"| B
-    
-    B -->|"7. Halts & Renders Safety Gate"| F["🛑 Markdown Approval Gate"]:::gateStyle
-    A -->|"8. Grants Authorization ('APPROVE')"| F
-    
-    F -->|"9. Triggers Slack Dispatch"| C
-    C -->|"10. Posts Formatted Report"| G["💬 Slack Workspace (#new-channel)"]:::slackStyle
-    C -->|"11. Emits Structured Audit Log"| A
+    A["👤 User"]:::userStyle -->|"1. Asks for report"| B["🤖 M's Desk Agent"]:::agentStyle
+    B -->|"2. Requests metrics"| C["🔌 Slack MCP Server"]:::toolStyle
+    C -->|"3. Reads file"| D[("📊 weekly_metrics.csv")]:::toolStyle
+    D -->|"4. Returns data"| B
+    B -->|"5. Runs Python code"| E["🧪 Code Sandbox"]:::sandboxStyle
+    E -->|"6. Computes totals"| B
+    B -->|"7. Shows draft table"| F["🛑 Approval Gate"]:::gateStyle
+    A -->|"8. Types 'APPROVE'"| F
+    F -->|"9. Dispatches report"| C
+    C -->|"10. Posts message"| G["💬 Slack Channel"]:::slackStyle
+    G -->|"11. Audit confirmation"| A
 ```
 
 ---
