@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node --env-file=.env slack-sse-server.mjs",
     "mcp": "node --env-file=.env slack-sse-server.mjs",
-    "proxy": "node --env-file=.env groq-proxy.mjs"
+    "proxy": "node --env-file=.env groq-proxy.mjs",
+    "test": "python3 -m unittest discover tests"
   },
   "keywords": [],
   "author": "",

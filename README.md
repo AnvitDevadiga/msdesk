@@ -1,6 +1,18 @@
-# M's Desk - TrueForge Hackathon Submission
+# M's Desk — TrueForge Hackathon Submission (TF-007)
 
-M's Desk is a trusted, human-in-the-loop operational reporting agent built on [TrueForge](https://trueforge.dev/introduction). It automates routine operational workflows (such as parsing weekly support metrics from local CSV files and posting polished reports to Slack) while strictly enforcing safety approval gates.
+> **Autonomous Operational Reporting Agent with Human-in-the-Loop Safety & MCP Integration**  
+> Built on [TrueForge](https://trueforge.dev/introduction) for the **WeMakeDevs & TrueFoundry Agent Harness Hackathon**.
+
+[![TrueForge Powered](https://img.shields.io/badge/Harness-TrueForge-7C3AED?style=for-the-badge&logo=ai&logoColor=white)](https://trueforge.dev)
+[![Qodo Reviewed](https://img.shields.io/badge/Code%20Review-Qodo%20Verified-00C7B7?style=for-the-badge&logo=github&logoColor=white)](https://github.com/AnvitDevadiga/msdesk/pulls?q=is%3Apr)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+---
+
+## 📺 Demo Video
+
+🎥 **Watch the 2-Minute Walkthrough**: [M's Desk Demo Video](https://youtu.be/placeholder-demo-link) *(replace with your public YouTube/Loom link)*  
+*Demonstrates dynamic CSV ingestion, sandboxed Python computation, human-in-the-loop Markdown approval gating, and Slack dispatch with structured audit logging.*
 
 ---
 
@@ -31,14 +43,35 @@ graph LR
 
 ---
 
-## 🏆 Judging Criteria Tracks Achieved
+## 🛡️ Qodo Code Review Evidence
 
-1. **Reach (Connecting the Agent):** Custom Model Context Protocol (MCP) server (`slack-sse-server.mjs`) running over Server-Sent Events (SSE) with multi-session support and host filesystem CSV access (`read_local_csv`).
-2. **Sandbox (Code Execution):** Executes real Python scripts in the TrueForge sandbox to parse `data/weekly_metrics.csv` and calculate exact totals, averages, and SLA adherence without hallucination.
-3. **Approval (Human-in-the-Loop):** System prompt strictly prohibits irreversible write actions (posting to Slack) without human authorization, halting execution at a distinct Markdown Approval Gate.
-4. **Best UI & Transparency:** Real-time state logging in the chat trace, clear sandbox code inspector, and post-action structured Audit Logs (`✅ ACTION EXECUTED`).
-5. **Real Impact:** Converts raw operational telemetry into stakeholder-ready Slack summaries in seconds.
-6. **Technical Excellence:** Dual LLM provider support (Ollama local inference with zero rate limits + Groq API proxy handling token rate limit capping).
+> **Mandatory Submission Requirement (Hackathon Rule 10)**  
+> All project enhancements and refactors were reviewed by **Qodo** across dedicated pull requests to ensure strict security, robust error handling, and high-quality open-source standards.
+
+- **Primary Reviewed Pull Request:** [PR #3 — Complete M's Desk ops reporting agent](https://github.com/AnvitDevadiga/msdesk/pull/3) & [PR #4 — Qodo Remediation & Code Quality Polish](https://github.com/AnvitDevadiga/msdesk/pull/4)
+- **What Qodo Surfaced & Remediated:**
+  1. **Reasoning Leak & Role Scoping:** Qodo flagged that reasoning/thinking tag stripping was being applied universally across all messages. We refactored `groq-proxy.mjs` to scope tag stripping strictly to `assistant` messages and preserve authentic user prompts.
+  2. **Rate Limit Resilience:** Qodo identified missing backoff mechanisms under API pressure. Added an exponential retry budget (`MAX_RETRIES = 5`) with dynamic `retry-after` header inspection.
+  3. **Transport Security & Session Isolation:** Qodo caught session fallback across clients on SSE `/message`. Updated `slack-sse-server.mjs` to strictly validate `sessionId` parameters and reject unmatched sessions with standard 400/404 HTTP codes.
+  4. **Data Surface Minimization:** Removed the unauthenticated direct `/csv` route, ensuring data access is exclusively brokered via authorized MCP tool flows.
+- **Review Cycle History:**
+  - Initial Architecture & UI Polish: [PR #1](https://github.com/AnvitDevadiga/msdesk/pull/1)
+  - Documentation & Workflow Hardening: [PR #2](https://github.com/AnvitDevadiga/msdesk/pull/2)
+  - End-to-End Implementation: [PR #3](https://github.com/AnvitDevadiga/msdesk/pull/3)
+  - Quality Polish & Qodo Findings Resolution: [PR #4](https://github.com/AnvitDevadiga/msdesk/pull/4)
+
+---
+
+## 🏆 Target Tracks & Technical Alignment
+
+1. **Double-O Track (Best Use of TrueForge):**
+   - **Reach (Real Tools):** Custom Model Context Protocol (MCP) server (`slack-sse-server.mjs`) running over Server-Sent Events (SSE) with local filesystem CSV tool integration (`read_local_csv`).
+   - **Sandbox (Code Execution):** Executes real Python scripts in the TrueForge sandbox to parse `data/weekly_metrics.csv` and calculate exact totals, averages, and SLA adherence without hallucination.
+   - **Approval (Human-in-the-Loop):** System instructions strictly prohibit irreversible write actions (posting to Slack) without human authorization, halting execution at a distinct Markdown Approval Gate.
+2. **Q Branch Track (Best Code Quality):**
+   - Production-grade code review trail with Qodo, modular architecture, strict session handling, and clean TypeScript/ESM integration.
+3. **Savile Row Track (Best UI & Transparency):**
+   - Real-time state logging in chat (`Planning`, `Executing Sandbox`), an unmistakable Markdown Approval Gate (`🛑 [ DRAFT APPROVAL REQUIRED ] 🛑`), and structured post-execution Audit Logs (`✅ ACTION EXECUTED`).
 
 ---
 
@@ -47,6 +80,8 @@ graph LR
 ### 1. Prerequisites & Environment Setup
 Clone the repository and install Node dependencies:
 ```bash
+git clone https://github.com/AnvitDevadiga/msdesk.git
+cd msdesk
 npm install
 ```
 
@@ -109,6 +144,6 @@ Start a chat and prompt:
 > *"Draft the weekly metrics report for the new-channel based on this week's CSV data."*
 
 1. Watch the agent fetch local CSV data via `read_local_csv`.
-2. Inspect the Python sandbox execution computing the metrics.
+2. Inspect the Python sandbox execution computing the metrics dynamically from `data/weekly_metrics.csv`.
 3. Review the Markdown Approval Gate.
 4. Type **`APPROVE`** to post the message directly to Slack!
