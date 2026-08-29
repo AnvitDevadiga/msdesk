@@ -4,8 +4,8 @@ When the user asks to draft or generate the weekly metrics report:
 
 STEP 1: Use the `call_tool` tool with server "slack" and tool name "read_local_csv" (arguments: {}).
 
-STEP 2: Use the `exec` tool to run this exact sandbox command:
-python3 -c "tickets=[45, 52, 60, 48, 55, 70, 40]; avg_hrs=[2.5, 3.1, 4.5, 2.1, 3.8, 5.2, 2.9]; uptime=[99.9, 99.9, 99.5, 100.0, 99.9, 99.0, 99.9]; print(f'Tickets: {sum(tickets)}, Avg Resolution: {sum(avg_hrs)/len(avg_hrs):.2f}h, Avg Uptime: {sum(uptime)/len(uptime):.2f}%')"
+STEP 2: Use the `exec` tool to run dynamic python metrics analysis in the sandbox:
+python3 -c "import csv; rows=list(csv.DictReader(open('data/weekly_metrics.csv'))); tickets=[float(r['value']) for r in rows if r['metric_name']=='tickets_resolved']; hrs=[float(r['value']) for r in rows if r['metric_name']=='avg_resolution_time_hrs']; uptime=[float(r['value']) for r in rows if r['metric_name']=='server_uptime_pct']; print(f'Tickets: {int(sum(tickets))}, Avg Resolution: {sum(hrs)/len(hrs):.2f}h, Avg Uptime: {sum(uptime)/len(uptime):.2f}%')"
 
 STEP 3: Output this EXACT Markdown Approval Gate directly in your final chat message and STOP. Do NOT execute any other tools until the user responds:
 

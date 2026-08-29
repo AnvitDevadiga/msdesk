@@ -496,24 +496,20 @@ async function main() {
 
     app.post("/message", async (req, res) => {
         const sessionId = req.query.sessionId;
-        const transport = (sessionId && transports.get(sessionId)) || Array.from(transports.values()).pop();
+        if (!sessionId) {
+            res.status(400).send("Missing sessionId query parameter");
+            return;
+        }
+        const transport = transports.get(sessionId);
         if (!transport) {
-            console.error("No active transport for POST /message, sessionId:", sessionId);
-            res.status(500).send("No active transport");
+            console.error("No active transport found for sessionId:", sessionId);
+            res.status(404).send("Session not found or expired");
             return;
         }
         await transport.handlePostMessage(req, res);
     });
 
     const port = process.env.PORT || 3001;
-    app.get("/csv", (req, res) => {
-        res.sendFile(CSV_PATH, (err) => {
-            if (err) {
-                res.status(500).send("Error reading CSV: " + err.message);
-            }
-        });
-    });
-
     app.listen(port, () => {
         console.error(`Slack MCP Server running on SSE at http://localhost:${port}/sse`);
     });
