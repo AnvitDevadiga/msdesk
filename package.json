@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --env-file=.env slack-sse-server.mjs",
+    "mcp": "node --env-file=.env slack-sse-server.mjs",
+    "proxy": "node --env-file=.env groq-proxy.mjs"
   },
   "keywords": [],
   "author": "",
