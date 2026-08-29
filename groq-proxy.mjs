@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 function stripThinkingContent(text) {
     if (typeof text !== 'string') return text;
     let result = text;
-    result = result.replace(/<\?[\s\S]*?<\/think>/gi, '').trim();
+    result = result.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
     result = result.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim();
     result = result.replace(/```(?:thinking|reasoning)[\s\S]*?```/gi, '').trim();
     return result;
@@ -34,31 +34,20 @@ app.post(['/v1/chat/completions', '/chat/completions'], async (req, res) => {
         body.max_tokens = MAX_TPM_SAFE;
     }
 
-    // Strip reasoning_content AND inline thinking blocks from message history.
-    // This prevents thinking tokens from accumulating in the prompt on every turn,
-    // which would push us over the 8000 TPM limit.
+    // Strip reasoning_content AND inline thinking blocks from assistant message history.
     if (body.messages && Array.isArray(body.messages)) {
         let stripped = 0;
         body.messages = body.messages.map(msg => {
-            if (msg.reasoning_content !== undefined) {
-                delete msg.reasoning_content;
-                stripped++;
-            }
-            if (typeof msg.content === 'string') {
-                const original = msg.content;
-                msg.content = stripThinkingContent(msg.content);
-                if (msg.content !== original) stripped++;
-            }
-            // Also handle content as array (for multimodal)
-            if (Array.isArray(msg.content)) {
-                msg.content = msg.content.map(part => {
-                    if (part.type === 'text' && typeof part.text === 'string') {
-                        const originalText = part.text;
-                        part.text = stripThinkingContent(part.text);
-                        if (part.text !== originalText) stripped++;
-                    }
-                    return part;
-                });
+            if (msg.role === 'assistant') {
+                if (msg.reasoning_content !== undefined) {
+                    delete msg.reasoning_content;
+                    stripped++;
+                }
+                if (typeof msg.content === 'string') {
+                    const original = msg.content;
+                    msg.content = stripThinkingContent(msg.content);
+                    if (msg.content !== original) stripped++;
+                }
             }
             return msg;
         });
@@ -78,12 +67,14 @@ app.post(['/v1/chat/completions', '/chat/completions'], async (req, res) => {
             body: JSON.stringify(body)
         });
 
-        // If we hit the 429 Rate Limit, intercept it, sleep for the required time, and retry transparently!
-        // We use a while loop to ensure we keep sleeping if the retry fails again!
-        while (groqResponse.status === 429) {
+        // Retry loop for 429 rate limit (capped at 5 attempts max)
+        let retries = 0;
+        const MAX_RETRIES = 5;
+        while (groqResponse.status === 429 && retries < MAX_RETRIES) {
+            retries++;
             const retryAfter = groqResponse.headers.get('retry-after') || '20';
-            const waitSec = parseFloat(retryAfter);
-            console.log(`[PROXY] Hit 429 Rate Limit. Automatically sleeping for ${waitSec} seconds to bypass limit...`);
+            const waitSec = Math.min(parseFloat(retryAfter) || 20, 60);
+            console.log(`[PROXY] Hit 429 Rate Limit (Attempt ${retries}/${MAX_RETRIES}). Sleeping for ${waitSec}s...`);
             await new Promise(r => setTimeout(r, waitSec * 1000 + 500));
             console.log(`[PROXY] Waking up and retrying request...`);
             groqResponse = await fetch(groqUrl, {
