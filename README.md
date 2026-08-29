@@ -4,6 +4,37 @@ M's Desk is a trusted, human-in-the-loop operational reporting agent built on [T
 
 ---
 
+## 🏗️ System Architecture
+
+```mermaid
+graph TD
+    %% Custom Styling
+    classDef userStyle fill:#1e1e2e,stroke:#cba6f7,stroke-width:2px,color:#cdd6f4;
+    classDef agentStyle fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4;
+    classDef toolStyle fill:#1e1e2e,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4;
+    classDef sandboxStyle fill:#1e1e2e,stroke:#fab387,stroke-width:2px,color:#cdd6f4;
+    classDef gateStyle fill:#1e1e2e,stroke:#f38ba8,stroke-width:2px,color:#cdd6f4;
+    classDef slackStyle fill:#1e1e2e,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4;
+
+    A["👤 User"]:::userStyle -->|"1. Triggers Weekly Report"| B["🤖 M's Desk Agent (TrueForge)"]:::agentStyle
+    
+    B -->|"2. Queries Tool via SSE"| C["🔌 Slack MCP Server"]:::toolStyle
+    C -->|"3. Reads Local CSV"| D[("📁 data/weekly_metrics.csv")]:::toolStyle
+    D -->|"4. Returns Raw Telemetry"| B
+    
+    B -->|"5. Dispatches Python Execution"| E["🧪 Isolated Code Sandbox"]:::sandboxStyle
+    E -->|"6. Computes Totals & SLA Metrics"| B
+    
+    B -->|"7. Halts & Renders Safety Gate"| F["🛑 Markdown Approval Gate"]:::gateStyle
+    A -->|"8. Grants Authorization ('APPROVE')"| F
+    
+    F -->|"9. Triggers Slack Dispatch"| C
+    C -->|"10. Posts Formatted Report"| G["💬 Slack Workspace (#new-channel)"]:::slackStyle
+    C -->|"11. Emits Structured Audit Log"| A
+```
+
+---
+
 ## 🏆 Judging Criteria Tracks Achieved
 
 1. **Reach (Connecting the Agent):** Custom Model Context Protocol (MCP) server (`slack-sse-server.mjs`) running over Server-Sent Events (SSE) with multi-session support and host filesystem CSV access (`read_local_csv`).
@@ -51,7 +82,7 @@ GROQ_API_KEY=gsk_your_groq_api_key
 #### Option B: Groq API (Cloud)
 Start the Groq Anti-Rate-Limit Proxy:
 ```bash
-node --env-file=.env groq-proxy.mjs
+npm run proxy
 ```
 In TrueForge Settings → Models:
 - **Base URL:** `http://localhost:3002/v1`
@@ -62,7 +93,7 @@ In TrueForge Settings → Models:
 ### 3. Start the Slack MCP Server
 Start the local Slack SSE MCP Server:
 ```bash
-node --env-file=.env slack-sse-server.mjs
+npm start
 ```
 
 ---
